@@ -1,0 +1,205 @@
+{
+  "apiVersion": "fleet.cattle.io/v1alpha1",
+  "kind": "HelmOp",
+  "metadata": {
+    "name": "suse-ai-litellm-litellm-system",
+    "namespace": "fleet-local"
+  },
+  "spec": {
+    "defaultNamespace": "litellm-system",
+    "helm": {
+      "version": "0.1.837",
+      "repo": "oci://registry.suse.com/ai/charts/litellm",
+      "releaseName": "suse-ai-litellm-litellm-system",
+      "values": {
+        "affinity": {},
+        "args": {},
+        "autoscaling": {
+          "enabled": false,
+          "maxReplicas": 100,
+          "minReplicas": 1,
+          "targetCPUUtilizationPercentage": 80
+        },
+        "command": {},
+        "db": {
+          "database": "litellm",
+          "deployStandalone": true,
+          "endpoint": "localhost",
+          "secret": {
+            "endpointKey": "",
+            "name": "postgres",
+            "passwordKey": "password",
+            "usernameKey": "username"
+          },
+          "url": "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@$(DATABASE_HOST)/$(DATABASE_NAME)",
+          "useExisting": false,
+          "useStackgresOperator": false
+        },
+        "deploymentAnnotations": {},
+        "deploymentLabels": {},
+        "envVars": {},
+        "environmentConfigMaps": [],
+        "environmentSecrets": [],
+        "extraEnvVars": {},
+        "extraResources": [],
+        "fullnameOverride": "",
+        "global": {
+          "imagePullSecrets": [
+            {
+              "name": "suse-ai-pull-secret-dp-apps-rancher-io"
+            },
+            {
+              "name": "suse-ai-pull-secret-registry-suse-com"
+            }
+          ],
+          "imageRegistry": ""
+        },
+        "image": {
+          "pullPolicy": "Always",
+          "registry": "registry.suse.com",
+          "repository": "ai/containers/litellm-database",
+          "tag": "1.80.15-stable.1"
+        },
+        "imagePullSecrets": [
+          {
+            "name": "suse-ai-pull-secret-dp-apps-rancher-io"
+          },
+          {
+            "name": "suse-ai-pull-secret-registry-suse-com"
+          }
+        ],
+        "ingress": {
+          "annotations": {},
+          "className": "nginx",
+          "enabled": false,
+          "hosts": [
+            {
+              "host": "api.example.local",
+              "paths": [
+                {
+                  "path": "/",
+                  "pathType": "ImplementationSpecific"
+                }
+              ]
+            }
+          ],
+          "labels": {},
+          "tls": []
+        },
+        "masterkeySecretKey": "",
+        "masterkeySecretName": "",
+        "migrationJob": {
+          "annotations": {},
+          "backoffLimit": 4,
+          "disableSchemaUpdate": false,
+          "enabled": true,
+          "extraContainers": [],
+          "hooks": {
+            "argocd": {
+              "enabled": true
+            },
+            "helm": {
+              "enabled": false
+            }
+          },
+          "resources": {},
+          "retries": 3,
+          "ttlSecondsAfterFinished": 120
+        },
+        "nameOverride": "litellm",
+        "nodeSelector": {},
+        "pdb": {
+          "annotations": {},
+          "enabled": false,
+          "labels": {},
+          "maxUnavailable": null,
+          "minAvailable": null
+        },
+        "podAnnotations": {},
+        "podLabels": {},
+        "podSecurityContext": {},
+        "postgresql": {
+          "architecture": "standalone",
+          "auth": {
+            "database": "litellm",
+            "password": "NoTaGrEaTpAsSwOrD",
+            "postgres-password": "NoTaGrEaTpAsSwOrD",
+            "username": "litellm"
+          }
+        },
+        "proxyConfigMap": {
+          "create": true
+        },
+        "proxy_config": {
+          "general_settings": {
+            "master_key": "os.environ/PROXY_MASTER_KEY"
+          },
+          "model_list": [
+            {
+              "litellm_params": {
+                "api_key": "eXaMpLeOnLy",
+                "model": "gpt-3.5-turbo"
+              },
+              "model_name": "gpt-3.5-turbo"
+            },
+            {
+              "litellm_params": {
+                "api_base": "https://exampleopenaiendpoint-production.up.railway.app/",
+                "api_key": "fake-key",
+                "model": "openai/fake"
+              },
+              "model_name": "fake-openai-endpoint"
+            }
+          ]
+        },
+        "redis": {
+          "architecture": "standalone",
+          "enabled": false
+        },
+        "replicaCount": 1,
+        "resources": {},
+        "securityContext": {},
+        "separateHealthApp": false,
+        "separateHealthPort": 8081,
+        "service": {
+          "port": 4000,
+          "type": "ClusterIP"
+        },
+        "serviceAccount": {
+          "annotations": {},
+          "automount": true,
+          "create": false,
+          "name": ""
+        },
+        "serviceMonitor": {
+          "annotations": {},
+          "enabled": false,
+          "interval": "15s",
+          "labels": {},
+          "namespaceSelector": {
+            "matchNames": []
+          },
+          "relabelings": [],
+          "scrapeTimeout": "10s"
+        },
+        "terminationGracePeriodSeconds": 90,
+        "tolerations": [],
+        "topologySpreadConstraints": [],
+        "volumeMounts": [],
+        "volumes": [],
+        "postgressql": {
+          "persistence": {
+            "storageClassName": "local-path"
+          }
+        }
+      },
+      "disablePreProcess": true
+    },
+    "targets": [
+      {
+        "clusterName": "local"
+      }
+    ],
+    "helmSecretName": "suse-ai-registry-auth"
+  }
+}
