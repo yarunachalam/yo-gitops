@@ -1,0 +1,123 @@
+{
+  "apiVersion": "fleet.cattle.io/v1alpha1",
+  "kind": "HelmOp",
+  "metadata": {
+    "name": "suse-ai-aiq-aira-aiq-aira-system-local",
+    "namespace": "fleet-local"
+  },
+  "spec": {
+    "defaultNamespace": "aiq-aira-system",
+    "helm": {
+      "chart": "aiq-aira",
+      "version": "v1.2.0",
+      "repo": "https://helm.ngc.nvidia.com/nvidia/blueprint",
+      "releaseName": "aiq-aira",
+      "values": {
+        "backendEnvVars": {
+          "AIRA_APPLY_GUARDRAIL": "false",
+          "INSTRUCT_API_KEY": "not-needed",
+          "INSTRUCT_BASE_URL": "http://instruct-llm:8000",
+          "INSTRUCT_MAX_TOKENS": "20000",
+          "INSTRUCT_MODEL_NAME": "meta/llama-3.2-1b-instruct",
+          "INSTRUCT_MODEL_TEMP": "0.0",
+          "NEMOTRON_BASE_URL": "http://nim-llm.rag.svc.cluster.local:8000",
+          "NEMOTRON_MAX_TOKENS": "5000",
+          "NEMOTRON_MODEL_NAME": "nvidia/Llama-3.1-Nemotron-Nano-4B-v1.1",
+          "NEMOTRON_MODEL_TEMP": "0.5",
+          "RAG_INGEST_URL": "http://ingestor-server.rag.svc.cluster.local:8082",
+          "RAG_SERVER_URL": "http://rag-server.rag.svc.cluster.local:8081"
+        },
+        "frontend": {
+          "enabled": true,
+          "image": {
+            "pullPolicy": "Always",
+            "repository": "nvcr.io/nvidia/blueprint/aira-frontend",
+            "tag": "v1.2.0"
+          },
+          "replicaCount": 1,
+          "service": {
+            "nodePort": 30080,
+            "port": 3000,
+            "targetPort": 3000,
+            "type": "NodePort"
+          }
+        },
+        "image": {
+          "baserepo": "nvcr.io",
+          "pullPolicy": "Always",
+          "repository": "nvcr.io/nvidia/blueprint/aira-backend",
+          "tag": "v1.2.0"
+        },
+        "imagePullSecret": {
+          "create": false,
+          "name": "ngc-secret",
+          "password": "",
+          "registry": "nvcr.io",
+          "username": "$oauthtoken"
+        },
+        "ngcApiSecret": {
+          "create": false,
+          "name": "ngc-api",
+          "password": ""
+        },
+        "nim-llm": {
+          "enabled": true,
+          "image": {
+            "pullPolicy": "IfNotPresent",
+            "repository": "nvcr.io/nim/meta/llama-3.2-1b-instruct",
+            "tag": "1.12.0"
+          },
+          "model": {
+            "name": "meta/llama-3.2-1b-instruct",
+            "ngcAPIKey": ""
+          },
+          "resources": {
+            "limits": {
+              "nvidia.com/gpu": 2
+            },
+            "requests": {
+              "nvidia.com/gpu": 2
+            }
+          },
+          "service": {
+            "name": "instruct-llm"
+          }
+        },
+        "phoenix": {
+          "enabled": true,
+          "image": {
+            "pullPolicy": "IfNotPresent",
+            "repository": "arizephoenix/phoenix",
+            "tag": "latest"
+          },
+          "resources": {
+            "limits": {
+              "cpu": "500m",
+              "memory": "512Mi"
+            },
+            "requests": {
+              "cpu": "200m",
+              "memory": "256Mi"
+            }
+          }
+        },
+        "replicaCount": 1,
+        "service": {
+          "port": 3838
+        },
+        "tavilyApiSecret": {
+          "create": true,
+          "name": "tavily-secret",
+          "password": ""
+        }
+      },
+      "disablePreProcess": true,
+      "takeOwnership": true
+    },
+    "targets": [
+      {
+        "clusterName": "local"
+      }
+    ]
+  }
+}
