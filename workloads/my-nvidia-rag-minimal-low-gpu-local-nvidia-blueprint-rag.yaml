@@ -1,0 +1,214 @@
+{
+  "apiVersion": "fleet.cattle.io/v1alpha1",
+  "kind": "HelmOp",
+  "metadata": {
+    "name": "my-nvidia-rag-minimal-low-gpu-local-nvidia-blueprint-rag",
+    "namespace": "fleet-local"
+  },
+  "spec": {
+    "defaultNamespace": "my-nvidia-rag-minimal-low-gpu-system",
+    "helm": {
+      "chart": "nvidia-blueprint-rag",
+      "disablePreProcess": true,
+      "releaseName": "nvidia-blueprint-rag",
+      "repo": "https://helm.ngc.nvidia.com/nvidia/blueprint",
+      "takeOwnership": true,
+      "values": {
+        "envVars": {
+          "APP_EMBEDDINGS_MODELNAME": "nvidia/llama-nemotron-embed-1b-v2",
+          "APP_EMBEDDINGS_SERVERURL": "nemotron-embedding-ms:8000/v1",
+          "APP_FILTEREXPRESSIONGENERATOR_MODELNAME": "meta/llama-3.2-3b-instruct",
+          "APP_LLM_MODELNAME": "meta/llama-3.2-3b-instruct",
+          "APP_QUERYREWRITER_MODELNAME": "meta/llama-3.2-3b-instruct",
+          "APP_RANKING_MODELNAME": "nvidia/llama-nemotron-rerank-1b-v2",
+          "APP_VECTORSTORE_ENABLEGPUSEARCH": "False",
+          "LLM_MAX_TOKENS": "1024"
+        },
+        "image": {
+          "pullSecrets": [
+            "ngc-secret"
+          ]
+        },
+        "imagePullSecret": {
+          "create": false,
+          "name": "ngc-secret"
+        },
+        "imagePullSecrets": [
+          {
+            "name": "ngc-secret"
+          }
+        ],
+        "ingestor-server": {
+          "envVars": {
+            "APP_EMBEDDINGS_MODELNAME": "nvidia/llama-nemotron-embed-1b-v2",
+            "APP_EMBEDDINGS_SERVERURL": "nemotron-embedding-ms:8000/v1",
+            "APP_NVINGEST_EXTRACTCHARTS": "False",
+            "APP_NVINGEST_EXTRACTTABLES": "False",
+            "APP_VECTORSTORE_ENABLEGPUINDEX": "False",
+            "APP_VECTORSTORE_ENABLEGPUSEARCH": "False",
+            "SUMMARY_LLM": "meta/llama-3.2-3b-instruct",
+            "SUMMARY_LLM_MAX_CHUNK_LENGTH": "4000"
+          },
+          "resources": {
+            "requests": {
+              "cpu": "500m",
+              "memory": "1Gi"
+            }
+          }
+        },
+        "ngcApiSecret": {
+          "create": false,
+          "name": "ngc-api"
+        },
+        "nimOperator": {
+          "nim-llm": {
+            "enabled": true,
+            "env": [
+              {
+                "name": "NIM_SERVED_MODEL_NAME",
+                "value": "meta/llama-3.2-3b-instruct"
+              },
+              {
+                "name": "NIM_MAX_MODEL_LEN",
+                "value": "8192"
+              },
+              {
+                "name": "NIM_KVCACHE_PERCENT",
+                "value": "0.15"
+              }
+            ],
+            "expose": {
+              "ingress": {
+                "enabled": true,
+                "spec": {
+                  "rules": [
+                    {
+                      "host": "rag-frontend.suse.demo",
+                      "http": {
+                        "paths": [
+                          {
+                            "backend": {
+                              "service": {
+                                "name": "rag-frontend",
+                                "port": {
+                                  "number": 3000
+                                }
+                              }
+                            },
+                            "path": "/",
+                            "pathType": "Prefix"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "image": {
+              "repository": "nvcr.io/nim/meta/llama-3.2-3b-instruct",
+              "tag": "1.8.5"
+            },
+            "storage": {
+              "pvc": {
+                "create": true,
+                "size": "35Gi",
+                "volumeAccessMode": "ReadWriteOnce"
+              }
+            }
+          },
+          "nim-vlm": {
+            "enabled": false
+          },
+          "nvidia-nim-llama-nemotron-embed-1b-v2": {
+            "enabled": true
+          },
+          "nvidia-nim-llama-nemotron-embed-vl-1b-v2": {
+            "enabled": false
+          }
+        },
+        "nv-ingest": {
+          "envVars": {
+            "APP_EMBEDDINGS_SERVERURL": "nemotron-embedding-ms:8000/v1",
+            "COMPONENTS_TO_READY_CHECK": "",
+            "EMBEDDING_NIM_ENDPOINT": "http://nemotron-embedding-ms:8000/v1"
+          },
+          "fullnameOverride": "rag-nv-ingest",
+          "milvus": {
+            "externalS3": {
+              "accessKey": "minioadmin",
+              "bucketName": "nv-ingest",
+              "enabled": true,
+              "host": "rag-minio",
+              "port": 9000,
+              "rootPath": "file",
+              "secretKey": "minioadmin",
+              "useSSL": false
+            },
+            "image": {
+              "all": {
+                "repository": "docker.io/milvusdb/milvus",
+                "tag": "v2.6.5"
+              }
+            },
+            "minio": {
+              "fullnameOverride": "rag-minio"
+            },
+            "standalone": {
+              "resources": {
+                "requests": {
+                  "cpu": "1",
+                  "memory": "2Gi"
+                }
+              }
+            }
+          },
+          "nimOperator": {
+            "graphic_elements": {
+              "enabled": false
+            },
+            "ocr": {
+              "enabled": false
+            },
+            "page_elements": {
+              "enabled": false
+            },
+            "table_structure": {
+              "enabled": false
+            }
+          },
+          "otelEnabled": false,
+          "redis": {
+            "architecture": "standalone",
+            "fullnameOverride": "rag-redis"
+          },
+          "resources": {
+            "requests": {
+              "cpu": "2",
+              "memory": "4Gi"
+            }
+          }
+        },
+        "operator": {
+          "image": {
+            "pullSecrets": [
+              "ngc-secret"
+            ]
+          }
+        },
+        "resources": {
+          "requests": {
+            "cpu": "500m",
+            "memory": "1Gi"
+          }
+        }
+      },
+      "version": "v2.5.1"
+    },
+    "targets": [
+      {
+        "clusterName": "local"
+      }
+    ]
+  }
+}
