@@ -8,7 +8,7 @@
   "spec": {
     "defaultNamespace": "qdrant-system",
     "helm": {
-      "version": "1.17.0",
+      "version": "1.16.3",
       "repo": "oci://registry.suse.com/ai/charts/qdrant",
       "releaseName": "qdrant",
       "values": {
@@ -70,9 +70,6 @@
             },
             {
               "name": "suse-ai-pull-secret-registry-suse-com"
-            },
-            {
-              "name": "suse-ai-pull-secret-nvcr-io"
             }
           ],
           "imageRegistry": ""
@@ -81,7 +78,7 @@
           "pullPolicy": "IfNotPresent",
           "registry": "registry.suse.com",
           "repository": "ai/containers/qdrant",
-          "tag": "v1.17.0",
+          "tag": "v1.16.3",
           "useUnprivilegedImage": false
         },
         "imagePullSecrets": [
@@ -93,9 +90,6 @@
           },
           {
             "name": "suse-ai-pull-secret-registry-suse-com"
-          },
-          {
-            "name": "suse-ai-pull-secret-nvcr-io"
           }
         ],
         "ingress": {
@@ -157,7 +151,7 @@
           "additionalLabels": {},
           "annotations": {},
           "size": "10Gi",
-          "storageClassName": "longhorn"
+          "storageClassName": "local-path"
         },
         "podAnnotations": {},
         "podDisruptionBudget": {
