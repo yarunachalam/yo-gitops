@@ -1,0 +1,69 @@
+{
+  "apiVersion": "fleet.cattle.io/v1alpha1",
+  "kind": "HelmOp",
+  "metadata": {
+    "labels": {
+      "ai-factory.suse.com/workload-uid": "ffae780f-4789-4122-8b69-d0520ea64a31"
+    },
+    "name": "ollama-chatbot-c-92rhz-open-webui",
+    "namespace": "fleet-default"
+  },
+  "spec": {
+    "defaultNamespace": "ollama-chatbot-system",
+    "forceSyncGeneration": 0,
+    "helm": {
+      "disablePreProcess": true,
+      "releaseName": "open-webui",
+      "repo": "oci://dp.apps.rancher.io/charts/open-webui",
+      "takeOwnership": true,
+      "values": {
+        "global": {
+          "imagePullSecrets": [
+            {
+              "name": "suse-ai-pull-combined"
+            }
+          ]
+        },
+        "image": {
+          "registry": "dp.apps.rancher.io",
+          "repository": "containers/open-webui"
+        },
+        "imagePullSecrets": [
+          {
+            "name": "suse-ai-pull-combined"
+          }
+        ],
+        "ingress": {
+          "enabled": true,
+          "host": "ollama-chatbot",
+          "tls": true
+        },
+        "ollama": {
+          "enabled": false
+        },
+        "ollamaUrls": [
+          "http://ollama:11434"
+        ],
+        "persistence": {
+          "enabled": true,
+          "size": "20Gi"
+        }
+      },
+      "version": "8.19.1"
+    },
+    "helmSecretName": "application-collection-auth",
+    "labels": {
+      "ai-factory.suse.com/render-digest": "1ba9f718301928aa94b2734aaaeebf9070ba52e60af71f21a23f94abdfed357",
+      "ai-factory.suse.com/workload-uid": "ffae780f-4789-4122-8b69-d0520ea64a31"
+    },
+    "targets": [
+      {
+        "clusterSelector": {
+          "matchLabels": {
+            "management.cattle.io/cluster-name": "c-92rhz"
+          }
+        }
+      }
+    ]
+  }
+}
