@@ -26,7 +26,7 @@
         },
         "image": {
           "registry": "dp.apps.rancher.io",
-          "repository": "containers/ollama"
+          "repository": "containers/ollamaaa"
         },
         "imagePullSecrets": [
           {
@@ -47,7 +47,7 @@
     },
     "helmSecretName": "application-collection-auth",
     "labels": {
-      "ai-factory.suse.com/render-digest": "704bf949b4296d65149e2c82048e9b92c34c14cc8cdfa9cbae20177ab55d87d",
+      "ai-factory.suse.com/render-digest": "e2c4b6fde35015064ca16ff644a61a9df61f84496cdc291c09cb4676754224a",
       "ai-factory.suse.com/workload-uid": "07d5296e-6222-4bac-abcb-d15b892534af"
     },
     "targets": [
