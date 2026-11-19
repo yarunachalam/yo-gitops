@@ -8,7 +8,7 @@
   "spec": {
     "defaultNamespace": "qdrant-325jliq",
     "helm": {
-      "version": "1.19.2",
+      "version": "1.20.0",
       "repo": "oci://registry.suse.com/ai/charts/qdrant",
       "releaseName": "qdrant",
       "values": {
@@ -72,7 +72,7 @@
           "pullPolicy": "IfNotPresent",
           "registry": "registry.suse.com",
           "repository": "ai/containers/qdrant",
-          "tag": "v1.19.2",
+          "tag": "v1.20.0",
           "useUnprivilegedImage": false
         },
         "imagePullSecrets": [
